@@ -8,18 +8,37 @@ import Navbar from "@/components/Navbar";
 const Product = () => {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [animate, setAnimate] = useState(false);
+
+  const price = 195;
 
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
-  const increase = () => setQty(qty + 1);
-  const decrease = () => qty > 1 && setQty(qty - 1);
+  const increase = () => {
+    setQty((prev) => prev + 1);
+    triggerAnim();
+  };
+
+  const decrease = () => {
+    if (qty > 1) {
+      setQty((prev) => prev - 1);
+      triggerAnim();
+    }
+  };
+
+  const triggerAnim = () => {
+    setAnimate(true);
+    setTimeout(() => setAnimate(false), 200);
+  };
+
+  const total = price * qty;
 
   const handleAddToCart = () => {
     addToCart({
       id: 1,
       name: "Livro Autoridade sobre o Remo",
-      price: 195,
+      price,
       image: bookImg,
       quantity: qty,
     });
@@ -84,7 +103,7 @@ const Product = () => {
               </p>
             </div>
 
-            {/* PREÇO */}
+            {/* PREÇO UNITÁRIO */}
             <div className="flex items-end gap-4">
               <p className="text-4xl font-bold text-blue-600">
                 R$195,00
@@ -93,6 +112,19 @@ const Product = () => {
               <span className="text-sm text-green-600 font-semibold">
                 em até 12x sem juros
               </span>
+            </div>
+
+            {/* TOTAL DINÂMICO */}
+            <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+              <p className="text-sm text-gray-500">Total</p>
+
+              <p
+                className={`text-3xl font-bold text-blue-600 transition-transform duration-200 ${
+                  animate ? "scale-110" : "scale-100"
+                }`}
+              >
+                R${total.toFixed(2)}
+              </p>
             </div>
 
             {/* DESCRIÇÃO */}
@@ -111,35 +143,27 @@ const Product = () => {
 
                 <button
                   onClick={decrease}
-                  className="
-                    px-4 py-2
-                    text-blue-600
-                    hover:bg-blue-50
-                    active:scale-90
-                    transition
-                  "
+                  className="px-4 py-2 text-blue-600 hover:bg-blue-50 active:scale-90 transition"
                 >
                   -
                 </button>
 
-                <span className="px-6 font-semibold text-blue-600">
+                <span
+                  className={`px-6 font-semibold text-blue-600 transition-all duration-200 ${
+                    animate ? "scale-125 text-blue-700" : ""
+                  }`}
+                >
                   {qty}
                 </span>
 
                 <button
                   onClick={increase}
-                  className="
-                    px-4 py-2
-                    text-blue-600
-                    hover:bg-blue-50
-                    active:scale-90
-                    transition
-                  "
+                  className="px-4 py-2 text-blue-600 hover:bg-blue-50 active:scale-90 transition"
                 >
                   +
                 </button>
 
-                </div>
+              </div>
             </div>
 
             {/* BOTÕES */}

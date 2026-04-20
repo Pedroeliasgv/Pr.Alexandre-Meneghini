@@ -10,28 +10,37 @@ const navLinks = [
   { label: "YouTube", href: "#videos" },
   { label: "Eventos", href: "#events" },
   { label: "Contato", href: "#contact" },
-];
+] as const;
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const [animate, setAnimate] = useState(false);
+  const [prevCount, setPrevCount] = useState(0);
+  const [bump, setBump] = useState(1);
 
   const navigate = useNavigate();
   const location = useLocation();
-
   const { cart } = useCart();
 
+  // total de itens
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
+  // 🔥 animação proporcional
   useEffect(() => {
-    if (cartCount > 0) {
+    const diff = cartCount - prevCount;
+
+    if (diff > 0) {
+      setBump(diff);
       setAnimate(true);
+
       setTimeout(() => setAnimate(false), 300);
     }
+
+    setPrevCount(cartCount);
   }, [cartCount]);
 
-  const handleNavClick = (href) => {
+  const handleNavClick = (href: string) => {
     if (location.pathname !== "/") {
       navigate("/");
       setTimeout(() => {
@@ -94,8 +103,16 @@ const Navbar = () => {
                     bg-blue-500 text-white text-xs
                     w-5 h-5 flex items-center justify-center
                     rounded-full
-                    transition-transform duration-200
-                    ${animate ? "scale-125" : "scale-100"}
+                    transition-all duration-200
+                    ${
+                      animate
+                        ? bump > 3
+                          ? "scale-150 animate-bounce"
+                          : bump > 1
+                          ? "scale-135"
+                          : "scale-120"
+                        : "scale-100"
+                    }
                   `}
                 >
                   {cartCount}

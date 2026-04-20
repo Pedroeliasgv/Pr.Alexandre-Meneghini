@@ -11,7 +11,7 @@ const AboutSection = () => {
 
         <h2
           className="
-            text-3xl md:text-4xl font-bold text-blue-500 mb-16
+            text-3xl md:text-4xl font-bold text-white-500 mb-16
 
             max-w-4xl mx-auto
             text-center md:text-left

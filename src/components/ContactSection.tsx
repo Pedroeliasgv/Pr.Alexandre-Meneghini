@@ -64,7 +64,7 @@ const ContactSection = () => {
                     required
                     className="
                       bg-card border border-primary/10
-                      rounded-lg px-4 py-3 text-gray-500
+                      rounded-lg px-4 py-3 text-black
                       placeholder:text-gray/20
 
                       focus:outline-none
@@ -80,12 +80,12 @@ const ContactSection = () => {
                     placeholder="Sobrenome"
                     className="
                       bg-card border border-primary/10
-                      rounded-lg px-4 py-3 text-gray
+                      rounded-lg px-4 py-3 text-black
                       placeholder:text-gray/20
 
                       focus:outline-none
                       focus:border-blue-500
-                      focus:ring-1 focus:ring-blue-500/40
+                      focus:ring-1 focus:-blue-500/40
 
                       transition-all
                     "
@@ -99,7 +99,7 @@ const ContactSection = () => {
                   required
                   className="
                     w-full bg-card border border-primary/10
-                    rounded-lg px-4 py-3 text-gray
+                    rounded-lg px-4 py-3 text-black
                     placeholder:text-gray/20
 
                     focus:outline-none
@@ -117,7 +117,7 @@ const ContactSection = () => {
                   required
                   className="
                     w-full bg-card border border-primary/10
-                    rounded-lg px-4 py-3 text-gray
+                    rounded-lg px-4 py-3 text-black
                     placeholder:text-gray/20
 
                     focus:outline-none
