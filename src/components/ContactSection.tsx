@@ -10,24 +10,34 @@ const ContactSection = () => {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
+    const data = {
+      nome: String(formData.get("nome") || ""),
+      sobrenome: String(formData.get("sobrenome") || ""),
+      email: String(formData.get("email") || ""),
+      mensagem: String(formData.get("mensagem") || ""),
+    };
+
     try {
-      await fetch("https://formsubmit.co/ajax/535acfa4b16c83092276eaaab8a06198", {
+      const response = await fetch("/api/send-email", {
         method: "POST",
         headers: {
-          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        body: formData,
+        body: JSON.stringify(data),
       });
+
+      if (!response.ok) {
+        throw new Error("Erro na API");
+      }
 
       setSubmitted(true);
       form.reset();
     } catch (error) {
-      console.error("Erro ao enviar:", error);
+      console.error("Erro:", error);
       alert("Erro ao enviar testemunho");
     }
   };
 
-  // 🔥 VOLTA AUTOMÁTICO APÓS 5 SEGUNDOS
   useEffect(() => {
     if (submitted) {
       const timer = setTimeout(() => {
@@ -61,7 +71,7 @@ const ContactSection = () => {
 
         {/* CARD */}
         <div className="max-w-xl mx-auto">
-          <div className="relative bg-background border border-primary/10 rounded-xl p-8 overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)]">
+          <div className="relative bg-background border border-primary/10 rounded-xl p-8 shadow-[0_10px_40px_rgba(0,0,0,0.3)]">
 
             {submitted ? (
               <div className="text-center py-10 space-y-4">
@@ -73,10 +83,9 @@ const ContactSection = () => {
                   Seu testemunho foi enviado com sucesso.
                 </p>
 
-                {/* 🔁 BOTÃO VOLTAR */}
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="mt-4 text-sm text-blue-400 hover:underline"
+                  className="text-sm text-blue-400 hover:underline"
                 >
                   Enviar outro testemunho
                 </button>
@@ -84,16 +93,10 @@ const ContactSection = () => {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
 
-                {/* CONFIG */}
-                <input type="hidden" name="_subject" value="Novo testemunho recebido" />
-                <input type="hidden" name="_template" value="table" />
-                <input type="hidden" name="_captcha" value="false" />
-                <input type="hidden" name="_replyto" value="email" />
-
                 {/* NOME */}
                 <div className="grid grid-cols-2 gap-4">
                   <input
-                    name="Nome"
+                    name="nome"
                     type="text"
                     placeholder="Nome"
                     required
@@ -101,7 +104,7 @@ const ContactSection = () => {
                   />
 
                   <input
-                    name="Sobrenome"
+                    name="sobrenome"
                     type="text"
                     placeholder="Sobrenome"
                     className="bg-card border border-primary/10 rounded-lg px-4 py-3 text-black"
@@ -119,7 +122,7 @@ const ContactSection = () => {
 
                 {/* MENSAGEM */}
                 <textarea
-                  name="Mensagem"
+                  name="mensagem"
                   placeholder="Conte seu testemunho..."
                   rows={4}
                   required
