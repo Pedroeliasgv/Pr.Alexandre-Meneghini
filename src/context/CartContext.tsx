@@ -3,19 +3,27 @@ import { createContext, useContext, useState, useEffect } from "react";
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    // 🔥 persistência
+    const stored = localStorage.getItem("cart");
+    return stored ? JSON.parse(stored) : [];
+  });
+
   const [total, setTotal] = useState(0);
 
-  // TOTAL DINÂMICO
+  // 🔄 SALVA NO LOCALSTORAGE
   useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+
     const newTotal = cart.reduce(
       (acc, item) => acc + item.price * item.quantity,
       0
     );
+
     setTotal(newTotal);
   }, [cart]);
 
-  // AUMENTAR
+  // ➕ AUMENTAR
   const increaseItem = (id) => {
     setCart((prev) =>
       prev.map((item) =>
@@ -26,41 +34,51 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // DIMINUIR (REMOVE SE CHEGAR EM 0)
+  // ➖ DIMINUIR (SE FOR 1, REMOVE)
   const decreaseItem = (id) => {
     setCart((prev) =>
       prev
-        .map((item) =>
-          item.id === id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
+        .map((item) => {
+          if (item.id === id) {
+            if (item.quantity <= 1) return null;
+            return { ...item, quantity: item.quantity - 1 };
+          }
+          return item;
+        })
+        .filter(Boolean) // remove null
     );
   };
 
-  // REMOVER
+  // 🗑️ REMOVER
   const removeItem = (id) => {
     setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // ADICIONAR (RESPEITA QUANTIDADE)
+  // 🛒 ADICIONAR
   const addToCart = (product) => {
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
+
+      const quantityToAdd = product.quantity || 1; // 🔥 garante quantidade
 
       if (existing) {
         return prev.map((item) =>
           item.id === product.id
             ? {
                 ...item,
-                quantity: item.quantity + product.quantity, // ✅ corrigido
+                quantity: item.quantity + quantityToAdd,
               }
             : item
         );
       }
 
-      return [...prev, product]; // ✅ mantém quantidade escolhida
+      return [
+        ...prev,
+        {
+          ...product,
+          quantity: quantityToAdd,
+        },
+      ];
     });
   };
 
@@ -80,4 +98,13 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-export const useCart = () => useContext(CartContext);
+// 🔒 PROTEÇÃO CONTRA USO FORA DO PROVIDER
+export const useCart = () => {
+  const context = useContext(CartContext);
+
+  if (!context) {
+    throw new Error("useCart precisa estar dentro de um CartProvider");
+  }
+
+  return context;
+};

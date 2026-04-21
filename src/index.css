@@ -15,20 +15,25 @@
   html, body {
     width: 100%;
     min-height: 100%;
-    overflow-x: hidden;
+    /* Impede o scroll horizontal indesejado no mobile */
+    overflow-x: hidden; 
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    margin: 0;
+    padding: 0;
   }
   
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-family: 'Inter', sans-serif;
+    /* Evita que o navegador mobile tente "adivinhar" o zoom do texto */
+    text-size-adjust: 100%;
   }
   
-  /* 🔥 CORREÇÃO MOBILE REAL */
+  /* 🔥 CORREÇÃO MOBILE REAL (Altura Dinâmica) */
   @supports (height: 100dvh) {
-    body {
+    body, #root {
       min-height: 100dvh;
     }
   }
@@ -36,25 +41,36 @@
   h1, h2, h3 {
     font-family: 'Cinzel', serif;
   }
+
+  /* Ajuste para imagens de fundo não estourarem no mobile */
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
 }
 
-/* ANIMAÇÕES */
+/* UTILITÁRIOS DE CORREÇÃO DE IMAGEM */
 @layer utilities {
-  .animate-fade-up {
-    animation: fadeUp 0.4s ease-out forwards;
+  /* Adicione estas classes nas suas divs de fundo no JSX */
+  .bg-mobile-optimized {
+    background-position: center top; /* Garante que o rosto/topo não seja cortado */
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 
-  .animate-fade-in {
-    animation: fadeIn 0.4s ease-out forwards;
+  @media (max-width: 768px) {
+    .bg-mobile-optimized {
+      /* No mobile, mudamos para conter a imagem ou ajustar a posição */
+      background-position: 50% 20%; 
+      background-size: cover;
+    }
   }
 
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-
-  .animate-cta {
-    animation: pulse 2s ease-in-out infinite;
-  }
+  .animate-fade-up { animation: fadeUp 0.4s ease-out forwards; }
+  .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+  .animate-float { animation: float 3s ease-in-out infinite; }
+  .animate-cta { animation: pulse 2s ease-in-out infinite; }
 }
 
 /* KEYFRAMES */
@@ -69,12 +85,12 @@
 }
 
 @keyframes float {
-  0%,100% { transform: translateY(5px); }
+  0%, 100% { transform: translateY(5px); }
   50% { transform: translateY(0); }
 }
 
 @keyframes pulse {
-  0%,100% { transform: scale(1); }
+  0%, 100% { transform: scale(1); }
   50% { transform: scale(1.03); }
 }
 
@@ -91,10 +107,7 @@
 }
 
 /* SCROLLBAR */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
+::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-thumb {
   background: #3b82f6;
   border-radius: 999px;
@@ -106,6 +119,8 @@
   margin: 0;
   padding: 0; 
   text-align: initial;
+  display: flex;
+  flex-direction: column;
 }
 
 .input {
@@ -118,6 +133,4 @@
   transition: 0.2s;
 }
 
-.input:focus {
-  border-color: #3b82f6;
-}
+.input:focus { border-color: #3b82f6; }
