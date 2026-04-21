@@ -1,13 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Send } from "lucide-react";
 
 const ContactSection = () => {
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitted(true);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      await fetch("https://formsubmit.co/ajax/535acfa4b16c83092276eaaab8a06198", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+        body: formData,
+      });
+
+      setSubmitted(true);
+      form.reset();
+    } catch (error) {
+      console.error("Erro ao enviar:", error);
+      alert("Erro ao enviar testemunho");
+    }
   };
+
+  // 🔥 VOLTA AUTOMÁTICO APÓS 5 SEGUNDOS
+  useEffect(() => {
+    if (submitted) {
+      const timer = setTimeout(() => {
+        setSubmitted(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [submitted]);
 
   return (
     <section id="contact" className="py-24 bg-secondary relative overflow-hidden">
@@ -15,134 +44,92 @@ const ContactSection = () => {
 
         {/* HEAD */}
         <div className="text-center mb-14">
-          <p className="text-primary tracking-[0.3em] text-sm mb-4 uppercase animate-fade-up">
+          <p className="text-primary tracking-[0.3em] text-sm mb-4 uppercase">
             Testemunho
           </p>
 
-          <h2 className="text-3xl md:text-4xl font-bold text-white animate-fade-up delay-100">
+          <h2 className="text-3xl md:text-4xl font-bold text-white">
             Compartilhe o que Deus fez
           </h2>
 
-          <p className="text-muted-foreground max-w-lg mx-auto mt-4 animate-fade-up delay-200">
+          <p className="text-muted-foreground max-w-lg mx-auto mt-4">
             Seu testemunho pode alcançar e transformar outras vidas.
           </p>
 
-          <div className="w-20 h-[2px] bg-blue-500 mx-auto mt-6 animate-fade-up delay-300" />
+          <div className="w-20 h-[2px] bg-blue-500 mx-auto mt-6" />
         </div>
 
         {/* CARD */}
         <div className="max-w-xl mx-auto">
-
-          <div className="
-            relative bg-background border border-primary/10
-            rounded-xl p-8 overflow-hidden
-
-            shadow-[0_10px_40px_rgba(0,0,0,0.3)]
-            animate-fade-up
-          ">
-
-            {/* glow */}
-            <div className="absolute top-0 left-1/2 w-[300px] h-[150px] bg-blue-500/10 blur-[100px] -translate-x-1/2 pointer-events-none" />
+          <div className="relative bg-background border border-primary/10 rounded-xl p-8 overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)]">
 
             {submitted ? (
-              <div className="text-center py-10">
-                <p className="text-2xl font-semibold text-blue-400 mb-2">
+              <div className="text-center py-10 space-y-4">
+                <p className="text-2xl font-semibold text-blue-400">
                   Recebido 🙌
                 </p>
+
                 <p className="text-white/70">
                   Seu testemunho foi enviado com sucesso.
                 </p>
+
+                {/* 🔁 BOTÃO VOLTAR */}
+                <button
+                  onClick={() => setSubmitted(false)}
+                  className="mt-4 text-sm text-blue-400 hover:underline"
+                >
+                  Enviar outro testemunho
+                </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
+              <form onSubmit={handleSubmit} className="space-y-5">
+
+                {/* CONFIG */}
+                <input type="hidden" name="_subject" value="Novo testemunho recebido" />
+                <input type="hidden" name="_template" value="table" />
+                <input type="hidden" name="_captcha" value="false" />
+                <input type="hidden" name="_replyto" value="email" />
 
                 {/* NOME */}
                 <div className="grid grid-cols-2 gap-4">
                   <input
+                    name="Nome"
                     type="text"
                     placeholder="Nome"
                     required
-                    className="
-                      bg-card border border-primary/10
-                      rounded-lg px-4 py-3 text-black
-                      placeholder:text-gray/20
-
-                      focus:outline-none
-                      focus:border-blue-500
-                      focus:ring-1 focus:ring-blue-500/40
-
-                      transition-all
-                    "
+                    className="bg-card border border-primary/10 rounded-lg px-4 py-3 text-black"
                   />
 
                   <input
+                    name="Sobrenome"
                     type="text"
                     placeholder="Sobrenome"
-                    className="
-                      bg-card border border-primary/10
-                      rounded-lg px-4 py-3 text-black
-                      placeholder:text-gray/20
-
-                      focus:outline-none
-                      focus:border-blue-500
-                      focus:ring-1 focus:-blue-500/40
-
-                      transition-all
-                    "
+                    className="bg-card border border-primary/10 rounded-lg px-4 py-3 text-black"
                   />
                 </div>
 
                 {/* EMAIL */}
                 <input
+                  name="email"
                   type="email"
                   placeholder="Email"
                   required
-                  className="
-                    w-full bg-card border border-primary/10
-                    rounded-lg px-4 py-3 text-black
-                    placeholder:text-gray/20
-
-                    focus:outline-none
-                    focus:border-blue-500
-                    focus:ring-1 focus:ring-blue-500/40
-
-                    transition-all
-                  "
+                  className="w-full bg-card border border-primary/10 rounded-lg px-4 py-3 text-black"
                 />
 
                 {/* MENSAGEM */}
                 <textarea
+                  name="Mensagem"
                   placeholder="Conte seu testemunho..."
                   rows={4}
                   required
-                  className="
-                    w-full bg-card border border-primary/10
-                    rounded-lg px-4 py-3 text-black
-                    placeholder:text-gray/20
-
-                    focus:outline-none
-                    focus:border-blue-500
-                    focus:ring-1 focus:ring-blue-500/40
-
-                    transition-all resize-none
-                  "
+                  className="w-full bg-card border border-primary/10 rounded-lg px-4 py-3 text-black resize-none"
                 />
 
                 {/* BOTÃO */}
                 <button
                   type="submit"
-                  className="
-                    w-full bg-blue-500 hover:bg-blue-600
-                    text-white py-3 rounded-lg font-bold
-
-                    flex items-center justify-center gap-2
-
-                    transition-all duration-300
-                    hover:scale-[1.02]
-
-                    animate-cta
-                    shadow-lg
-                  "
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
                 >
                   <Send size={18} />
                   ENVIAR TESTEMUNHO
@@ -151,12 +138,8 @@ const ContactSection = () => {
               </form>
             )}
           </div>
-
         </div>
       </div>
-
-      {/* glow geral */}
-      <div className="absolute bottom-0 left-1/2 w-[500px] h-[250px] bg-blue-500/10 blur-[120px] -translate-x-1/2 pointer-events-none" />
     </section>
   );
 };

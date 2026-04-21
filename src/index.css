@@ -107,3 +107,17 @@
   padding: 0; 
   text-align: initial;
 }
+
+.input {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.input:focus {
+  border-color: #3b82f6;
+}
