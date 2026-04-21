@@ -6,7 +6,7 @@ const FooterCTA = () => {
 
       {/* CTA */}
       <a
-        href="https://wa.me/5511945585441?text=Olá! Vim do site."
+        href="https://wa.me/5511919311999?text=Paz do senhor Pr. Alexandre, Vim através do site"
         target="_blank"
         className="
           inline-block bg-blue-500 hover:bg-blue-600
