@@ -55,9 +55,4 @@ Foco em:
 
 ---
 
-## 📸 Preview
 
-> (adicione aqui um print do projeto depois)
-
-```md
-![preview](./preview.png)
