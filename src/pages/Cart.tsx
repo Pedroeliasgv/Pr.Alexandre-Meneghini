@@ -1,11 +1,25 @@
 import { useCart } from "@/context/CartContext";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
+import { useToast } from "@/hooks/use-toast";
 
 const Cart = () => {
-  const { cart, removeFromCart, increase, decrease, total } = useCart();
+  const { cart, removeItem, increaseItem, decreaseItem, total } = useCart();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCheckout = async () => {
+    if (cart.length === 0) {
+      toast({
+        title: "Carrinho vazio",
+        description: "Adicione produtos antes de finalizar a compra.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
     try {
       const response = await fetch("http://localhost:3001/create-preference", {
         method: "POST",
@@ -24,20 +38,42 @@ const Cart = () => {
       window.location.href = `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${data.id}`;
     } catch (error) {
       console.error(error);
-      alert("Erro ao iniciar pagamento.");
+      toast({
+        title: "Erro ao iniciar pagamento",
+        description: "Tente novamente mais tarde.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleRemove = (itemId) => {
+    removeItem(itemId);
+    toast({
+      title: "Produto removido",
+      description: "O item foi removido do carrinho.",
+    });
+  };
+
+  const handleIncrease = (itemId) => {
+    increaseItem(itemId);
+  };
+
+  const handleDecrease = (itemId) => {
+    decreaseItem(itemId);
   };
 
   return (
     <>
       <Navbar />
 
-      <div className="min-h-screen bg-black-100 pt-28 px-6">
+      <div className="min-h-screen bg-gray-50 pt-28 px-6">
         <div className="max-w-6xl mx-auto">
 
           {/* HEADER */}
           <div className="flex items-center justify-between mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-white-900">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
               Seu carrinho
             </h1>
 
@@ -104,8 +140,9 @@ const Cart = () => {
                       <div className="flex items-center border-2 border-gray-300 rounded-xl overflow-hidden bg-white shadow">
 
                         <button
-                          onClick={() => decrease(item.id)}
-                          className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-black font-bold transition"
+                          onClick={() => handleDecrease(item.id)}
+                          disabled={isLoading}
+                          className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-black font-bold transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           −
                         </button>
@@ -115,8 +152,9 @@ const Cart = () => {
                         </span>
 
                         <button
-                          onClick={() => increase(item.id)}
-                          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold transition"
+                          onClick={() => handleIncrease(item.id)}
+                          disabled={isLoading}
+                          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           +
                         </button>
@@ -125,12 +163,9 @@ const Cart = () => {
 
                       {/* REMOVER */}
                       <button
-                        onClick={() => {
-                          for (let i = 0; i < item.quantity; i++) {
-                            removeFromCart(item.id);
-                          }
-                        }}
-                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition"
+                        onClick={() => handleRemove(item.id)}
+                        disabled={isLoading}
+                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Remover
                       </button>
@@ -176,6 +211,7 @@ const Cart = () => {
                 {/* BOTÃO */}
                 <button
                   onClick={handleCheckout}
+                  disabled={isLoading || cart.length === 0}
                   className="
                     mt-6 w-full
                     bg-blue-600 hover:bg-blue-700
@@ -184,9 +220,10 @@ const Cart = () => {
                     shadow-lg
                     transition-all duration-300
                     active:scale-95
+                    disabled:opacity-50 disabled:cursor-not-allowed
                   "
                 >
-                  Finalizar compra
+                  {isLoading ? "Processando..." : "Finalizar compra"}
                 </button>
 
                 {/* SEGURANÇA */}

@@ -49,7 +49,7 @@ const Product = () => {
 
   const handleBuyNow = () => {
     handleAddToCart();
-    navigate("/carrinho");
+    navigate("/cart");
   };
 
   return (

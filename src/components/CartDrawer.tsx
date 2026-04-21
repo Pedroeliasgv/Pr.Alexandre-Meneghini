@@ -141,7 +141,7 @@ const CartDrawer = ({ open, onClose }) => {
             <button
               onClick={() => {
                 onClose();
-                navigate("/checkout");
+                navigate("/cart");
               }}
               className="
                 w-full bg-blue-600 hover:bg-blue-700
