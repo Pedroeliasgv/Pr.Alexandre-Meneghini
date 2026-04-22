@@ -56,7 +56,7 @@ const TestimonialSection = () => {
       setLoading(true);
 
       // Verificar se Supabase está configurado
-      if (supabase.supabaseUrl.includes("SUA_URL")) {
+      if (!supabase) {
         setTestimonials(mockTestimonials);
         setLoading(false);
         return;
@@ -104,7 +104,7 @@ const TestimonialSection = () => {
 
     try {
       // Verificar se Supabase está configurado
-      if (supabase.supabaseUrl.includes("SUA_URL")) {
+      if (!supabase) {
         // Adicionar testemunho localmente
         const newTestimonial: Testimonial = {
           id: Date.now().toString(),

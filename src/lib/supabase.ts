@@ -1,6 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = "SUA_URL_AQUI";
-const supabaseKey = "SUA_ANON_KEY_AQUI";
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://placeholder.supabase.co";
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "placeholder-key";
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// Só criar cliente se as credenciais estiverem configuradas
+export const supabase = supabaseUrl.includes("placeholder") || supabaseKey.includes("placeholder")
+  ? null
+  : createClient(supabaseUrl, supabaseKey);
