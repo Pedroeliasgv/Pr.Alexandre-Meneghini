@@ -7,6 +7,7 @@ interface Testimonial {
   nome: string;
   email: string;
   mensagem: string;
+  status?: 'pending' | 'approved' | 'rejected';
   created_at?: string;
 }
 
@@ -20,6 +21,10 @@ const TestimonialSection = () => {
     email: "",
     mensagem: "",
   });
+  const [filter, setFilter] = useState<'all' | 'approved' | 'pending'>('approved');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [showAdmin, setShowAdmin] = useState(false);
 
   // Mock de testemunhos para quando Supabase não está configurado
   const mockTestimonials: Testimonial[] = [
@@ -28,6 +33,7 @@ const TestimonialSection = () => {
       nome: "João Silva",
       email: "joao@example.com",
       mensagem: "Excelente conteúdo e muita inspiração. Recomendo para todos!",
+      status: "approved",
       created_at: new Date().toISOString(),
     },
     {
@@ -35,6 +41,7 @@ const TestimonialSection = () => {
       nome: "Maria Santos",
       email: "maria@example.com",
       mensagem: "Transformou minha vida espiritual. Muito obrigada!",
+      status: "approved",
       created_at: new Date().toISOString(),
     },
     {
@@ -42,6 +49,15 @@ const TestimonialSection = () => {
       nome: "Pedro Costa",
       email: "pedro@example.com",
       mensagem: "Os ensinamentos são profundos e muito relevantes para hoje.",
+      status: "approved",
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: "4",
+      nome: "Spam User",
+      email: "spam@example.com",
+      mensagem: "Este é um testemunho suspeito com palavras ruins",
+      status: "pending",
       created_at: new Date().toISOString(),
     },
   ];
@@ -91,6 +107,90 @@ const TestimonialSection = () => {
     }));
   };
 
+  // Lista de palavras suspeitas (pode ser expandida)
+  const suspiciousWords = [
+    'spam', 'fake', 'test', 'teste', 'lixo', 'ruim', 'péssimo',
+    'ódio', 'raiva', 'maldito', 'inferno', 'diabo', 'satanás',
+    'droga', 'álcool', 'sexo', 'porn', 'nudez', 'violência'
+  ];
+
+  // Função para validar conteúdo suspeito
+  const validateContent = (text: string): boolean => {
+    const lowerText = text.toLowerCase();
+    return suspiciousWords.some(word => lowerText.includes(word));
+  };
+
+  // Função para filtrar testemunhos
+  const getFilteredTestimonials = () => {
+    if (isAdmin) {
+      switch (filter) {
+        case 'approved':
+          return testimonials.filter(t => t.status === 'approved');
+        case 'pending':
+          return testimonials.filter(t => t.status === 'pending');
+        case 'all':
+          return testimonials;
+        default:
+          return testimonials.filter(t => t.status === 'approved');
+      }
+    }
+    // Para usuários normais, só mostra aprovados
+    return testimonials.filter(t => t.status === 'approved');
+  };
+
+  // Função de login admin (senha simples para demonstração)
+  const handleAdminLogin = () => {
+    if (adminPassword === "admin123") {
+      setIsAdmin(true);
+      setShowAdmin(false);
+      setAdminPassword("");
+    } else {
+      alert("Senha incorreta");
+    }
+  };
+
+  // Função para aprovar testemunho
+  const approveTestimonial = async (id: string) => {
+    if (!supabase) {
+      setTestimonials(prev =>
+        prev.map(t => t.id === id ? { ...t, status: 'approved' as const } : t)
+      );
+      return;
+    }
+
+    const { error } = await supabase
+      .from('testimonials')
+      .update({ status: 'approved' })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Erro ao aprovar:', error);
+    } else {
+      await loadTestimonials();
+    }
+  };
+
+  // Função para rejeitar testemunho
+  const rejectTestimonial = async (id: string) => {
+    if (!supabase) {
+      setTestimonials(prev =>
+        prev.map(t => t.id === id ? { ...t, status: 'rejected' as const } : t)
+      );
+      return;
+    }
+
+    const { error } = await supabase
+      .from('testimonials')
+      .update({ status: 'rejected' })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Erro ao rejeitar:', error);
+    } else {
+      await loadTestimonials();
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -100,15 +200,27 @@ const TestimonialSection = () => {
       return;
     }
 
+    // Verificar conteúdo suspeito
+    const hasSuspiciousContent = validateContent(formData.mensagem) ||
+                                validateContent(formData.nome);
+
+    if (hasSuspiciousContent) {
+      alert("Seu testemunho contém conteúdo que precisa ser revisado. Ele será enviado para moderação.");
+    }
+
     setSubmitting(true);
 
     try {
+      // Determinar status inicial baseado no conteúdo
+      const initialStatus = hasSuspiciousContent ? 'pending' : 'approved';
+
       // Verificar se Supabase está configurado
       if (!supabase) {
         // Adicionar testemunho localmente
         const newTestimonial: Testimonial = {
           id: Date.now().toString(),
           ...formData,
+          status: initialStatus,
           created_at: new Date().toISOString(),
         };
 
@@ -127,6 +239,7 @@ const TestimonialSection = () => {
           nome: formData.nome,
           email: formData.email,
           mensagem: formData.mensagem,
+          status: initialStatus,
           created_at: new Date().toISOString(),
         },
       ]);
@@ -167,9 +280,98 @@ const TestimonialSection = () => {
         <div className="grid md:grid-cols-2 gap-12">
           {/* FORMULÁRIO */}
           <div className="bg-white rounded-2xl shadow-xl p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
-              Compartilhe seu testemunho
-            </h3>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold text-gray-900">
+                Compartilhe seu testemunho
+              </h3>
+
+              {/* BOTÃO ADMIN */}
+              {!isAdmin && (
+                <button
+                  onClick={() => setShowAdmin(true)}
+                  className="text-sm text-gray-500 hover:text-gray-700 underline"
+                >
+                  Admin
+                </button>
+              )}
+            </div>
+
+            {/* MODAL ADMIN LOGIN */}
+            {showAdmin && !isAdmin && (
+              <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+                <h4 className="font-semibold mb-2">Login Administrativo</h4>
+                <div className="flex gap-2">
+                  <input
+                    type="password"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    placeholder="Senha admin"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  />
+                  <button
+                    onClick={handleAdminLogin}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+                  >
+                    Entrar
+                  </button>
+                  <button
+                    onClick={() => setShowAdmin(false)}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-400"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* CONTROLES ADMIN */}
+            {isAdmin && (
+              <div className="mb-6 p-4 bg-blue-50 rounded-xl">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-semibold text-blue-900">Modo Administrador</h4>
+                  <button
+                    onClick={() => setIsAdmin(false)}
+                    className="text-sm text-blue-600 hover:text-blue-800 underline"
+                  >
+                    Sair
+                  </button>
+                </div>
+
+                {/* FILTROS */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setFilter('all')}
+                    className={`px-3 py-1 rounded text-sm ${
+                      filter === 'all'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    Todos ({testimonials.length})
+                  </button>
+                  <button
+                    onClick={() => setFilter('approved')}
+                    className={`px-3 py-1 rounded text-sm ${
+                      filter === 'approved'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    Aprovados ({testimonials.filter(t => t.status === 'approved').length})
+                  </button>
+                  <button
+                    onClick={() => setFilter('pending')}
+                    className={`px-3 py-1 rounded text-sm ${
+                      filter === 'pending'
+                        ? 'bg-yellow-600 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    Pendentes ({testimonials.filter(t => t.status === 'pending').length})
+                  </button>
+                </div>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -240,16 +442,54 @@ const TestimonialSection = () => {
               <div className="text-center py-8 text-gray-500">
                 Carregando testemunhos...
               </div>
-            ) : testimonials.length === 0 ? (
+            ) : getFilteredTestimonials().length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                Nenhum testemunho ainda. Seja o primeiro!
+                {isAdmin && filter === 'pending'
+                  ? "Nenhum testemunho pendente"
+                  : "Nenhum testemunho ainda. Seja o primeiro!"}
               </div>
             ) : (
-              testimonials.map((testimonial) => (
+              getFilteredTestimonials().map((testimonial) => (
                 <div
                   key={testimonial.id}
-                  className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition"
+                  className={`bg-white rounded-2xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition ${
+                    testimonial.status === 'pending' ? 'border-yellow-300 bg-yellow-50' : ''
+                  }`}
                 >
+                  {/* STATUS INDICATOR (ADMIN ONLY) */}
+                  {isAdmin && (
+                    <div className="flex justify-between items-center mb-3">
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        testimonial.status === 'approved'
+                          ? 'bg-green-100 text-green-800'
+                          : testimonial.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {testimonial.status === 'approved' ? '✓ Aprovado' :
+                         testimonial.status === 'pending' ? '⏳ Pendente' : '✗ Rejeitado'}
+                      </span>
+
+                      {/* CONTROLES DE MODERAÇÃO */}
+                      {testimonial.status === 'pending' && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => approveTestimonial(testimonial.id!)}
+                            className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700"
+                          >
+                            Aprovar
+                          </button>
+                          <button
+                            onClick={() => rejectTestimonial(testimonial.id!)}
+                            className="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700"
+                          >
+                            Rejeitar
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* ESTRELAS */}
                   <div className="flex gap-1 mb-3">
                     {[...Array(5)].map((_, i) => (
