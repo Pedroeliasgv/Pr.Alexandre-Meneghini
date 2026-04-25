@@ -28,22 +28,9 @@ Foco em:
 
 ## 🧠 Funcionalidades
 
-- 🛍️ Página de produto moderna
-- ➕ Controle de quantidade dinâmico
-- 🛒 Carrinho global com Context API
-- 📦 Drawer lateral interativo
-- 💰 Cálculo automático de total
-- ⚡ Feedback visual ao adicionar produtos
-- 🔁 Navegação fluida entre páginas
-
+ 
 ---
 
-## 🧪 Stack utilizada
-
-- React
-- Vite
-- React Router DOM
-- Context API
 - Tailwind CSS
 - Lucide Icons
 

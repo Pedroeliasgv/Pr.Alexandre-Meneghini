@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import mercadopago from "mercadopago";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -34,16 +33,8 @@ app.post("/create-preference", async (req, res) => {
 
     const response = await mercadopago.preferences.create(preference);
 
-    res.json({
-      id: response.body.id,
-    });
+    dotenv.config();
 
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Erro ao criar pagamento");
-  }
-});
-
-app.listen(3001, () => {
-  console.log("🔥 API rodando na porta 3001");
-});
+    const app = express();
+    app.use(cors());
+    app.use(express.json());

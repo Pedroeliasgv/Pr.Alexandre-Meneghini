@@ -6,7 +6,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-let testemunhos = [];
+const testemunhos = [];
 
 // 📩 RECEBER TESTEMUNHO
 app.post("/submit-testimony", (req, res) => {

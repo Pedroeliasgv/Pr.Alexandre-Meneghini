@@ -7,11 +7,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 import Index from "./pages/Index";
 import Product from "./pages/Product";
-import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 
 import { useReveal } from "@/hooks/useReveal";
-import { CartProvider } from "@/context/CartContext"; 
 
 const queryClient = new QueryClient();
 
@@ -20,22 +18,19 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CartProvider> 
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
 
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/produto" element={<Product />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/produto" element={<Product />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
 
-        </TooltipProvider>
-      </CartProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 };

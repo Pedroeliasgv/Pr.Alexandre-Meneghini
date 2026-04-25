@@ -1,236 +1,279 @@
 import { useState } from "react";
-import { Mail, Send, CheckCircle } from "lucide-react";
+import { Mail, Send, CheckCircle, Zap, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-
-interface NewsletterSubscriber {
-  id?: string;
-  email: string;
-  nome?: string;
-  created_at?: string;
-  ativo: boolean;
-}
 
 const NewsletterSection = () => {
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
+    cpf: "",
+    maior: false,
   });
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // Limpar erro quando usuário começa a digitar
-    if (error) setError("");
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   };
 
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const formatCPF = (value: string) => {
+    return value
+      .replace(/\D/g, "")
+      .slice(0, 11)
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+
+    setError("");
+    setSuccess(false);
+  };
+
+  const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      cpf: formatCPF(e.target.value),
+    }));
+
+    setError("");
+    setSuccess(false);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validação
-    if (!formData.email) {
-      setError("Email é obrigatório");
+    const nome = formData.nome.trim();
+    const email = formData.email.trim().toLowerCase();
+    const cpf = formData.cpf.trim();
+
+    if (!nome) {
+      setError("Digite seu nome.");
       return;
     }
 
-    if (!validateEmail(formData.email)) {
-      setError("Por favor, insira um email válido");
+    if (!email) {
+      setError("Digite seu email.");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError("Digite um email válido.");
+      return;
+    }
+
+    if (!cpf || cpf.replace(/\D/g, "").length !== 11) {
+      setError("Digite um CPF válido.");
+      return;
+    }
+
+    if (!formData.maior) {
+      setError("Você precisa confirmar que é maior de 18 anos.");
       return;
     }
 
     setLoading(true);
     setError("");
+    setSuccess(false);
 
     try {
-      // Verificar se Supabase está configurado
-      if (!supabase) {
-        // Simular sucesso para desenvolvimento
-        console.log("Newsletter subscription:", formData);
-        setSuccess(true);
-        setFormData({ nome: "", email: "" });
-        setTimeout(() => setSuccess(false), 5000);
-        setLoading(false);
-        return;
-      }
-
-      // Verificar se email já existe
-      const { data: existing } = await supabase
+      const { data: existingSubscriber, error: searchError } = await supabase
         .from("newsletter_subscribers")
         .select("id")
-        .eq("email", formData.email)
+        .eq("email", email)
         .eq("ativo", true)
-        .single();
+        .maybeSingle();
 
-      if (existing) {
-        setError("Este email já está inscrito em nossa newsletter");
-        setLoading(false);
+      if (searchError) throw searchError;
+
+      if (existingSubscriber) {
+        setError("Este email já está inscrito.");
         return;
       }
 
-      // Inserir novo subscriber
       const { error: insertError } = await supabase
         .from("newsletter_subscribers")
-        .insert([
-          {
-            nome: formData.nome || null,
-            email: formData.email,
-            ativo: true,
-            created_at: new Date().toISOString(),
-          },
-        ]);
+        .insert({
+          nome,
+          email,
+          cpf,
+          maior_de_idade: formData.maior,
+          ativo: true,
+          created_at: new Date().toISOString(),
+        });
 
-      if (insertError) {
-        console.error("Erro ao salvar inscrição:", insertError);
-        setError("Erro ao processar inscrição. Tente novamente.");
-      } else {
-        setSuccess(true);
-        setFormData({ nome: "", email: "" });
-        setTimeout(() => setSuccess(false), 5000);
-      }
-    } catch (error) {
-      console.error("Erro:", error);
-      setError("Erro ao processar inscrição. Tente novamente.");
+      if (insertError) throw insertError;
+
+      await supabase.functions.invoke("newsletter-welcome", {
+        body: {
+          nome,
+          email,
+        },
+      });
+
+      setSuccess(true);
+      setFormData({
+        nome: "",
+        email: "",
+        cpf: "",
+        maior: false,
+      });
+    } catch (err) {
+      console.error("Erro ao cadastrar:", err);
+      setError("Não foi possível concluir sua inscrição. Tente novamente.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section id="newsletter" className="py-20 px-6 bg-gradient-to-r from-blue-600 to-purple-700">
-      <div className="max-w-4xl mx-auto text-center">
-        {/* HEADER */}
-        <div className="mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-full mb-6">
-            <Mail className="text-white" size={32} />
+    <section
+      id="newsletter"
+      className="relative py-24 md:py-32 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 overflow-hidden"
+    >
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/20 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-[120px]" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-400/50 text-blue-200">
+            <Zap size={16} />
+            <span className="text-sm font-semibold">FIQUE POR DENTRO</span>
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Fique por Dentro
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+            Receba conteúdos exclusivos no seu email
           </h2>
 
-          <p className="text-blue-100 text-lg max-w-2xl mx-auto">
-            Inscreva-se em nossa newsletter e receba as primeiras novidades sobre
-            novos livros, eventos especiais, conteúdos exclusivos e muito mais!
+          <p className="text-lg text-blue-100 max-w-2xl mx-auto">
+            Ensinamentos, reflexões e novidades sobre o livro diretamente na sua caixa de entrada.
           </p>
         </div>
 
-        {/* FORMULÁRIO */}
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-auto">
-          {!success ? (
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur-xl opacity-40" />
+
+            <form
+              onSubmit={handleSubmit}
+              className="relative bg-slate-950/95 rounded-2xl border border-blue-500/30 p-8 md:p-12 space-y-6 shadow-2xl"
+            >
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nome (opcional)
+                <label className="block text-white font-semibold mb-3">
+                  Seu nome
                 </label>
                 <input
                   type="text"
                   name="nome"
                   value={formData.nome}
                   onChange={handleInputChange}
-                  placeholder="Seu nome"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Digite seu nome"
                   disabled={loading}
+                  className="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all disabled:opacity-60"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email *
+                <label className="block text-white font-semibold mb-3">
+                  Seu email
                 </label>
+
+                <div className="relative">
+                  <Mail
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+                    size={20}
+                  />
+
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="seuemail@gmail.com"
+                    disabled={loading}
+                    className="w-full pl-12 pr-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all disabled:opacity-60"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-white font-semibold mb-3">
+                  CPF
+                </label>
+
                 <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="seu@email.com"
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent ${
-                    error
-                      ? "border-red-300 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                  }`}
+                  type="text"
+                  name="cpf"
+                  value={formData.cpf}
+                  onChange={handleCpfChange}
+                  placeholder="000.000.000-00"
                   disabled={loading}
-                  required
+                  className="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all disabled:opacity-60"
                 />
               </div>
 
+              <label className="flex items-start gap-3 text-sm text-slate-300 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="maior"
+                  checked={formData.maior}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  className="mt-1 w-4 h-4 accent-blue-600"
+                />
+
+                <span>
+                  Declaro que sou maior de 18 anos e autorizo o uso dos meus dados para receber conteúdos e acesso à comunidade.
+                </span>
+              </label>
+
               {error && (
-                <div className="text-red-600 text-sm text-left">
+                <div className="bg-red-500/15 border border-red-500/40 text-red-200 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                  <AlertCircle size={18} />
                   {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="bg-green-500/15 border border-green-500/40 text-green-200 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                  <CheckCircle size={18} />
+                  Inscrição confirmada! Verifique seu email para acessar a comunidade.
                 </div>
               )}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 rounded-lg font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-blue-500/30"
               >
                 {loading ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    Inscrevendo...
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Enviando...
                   </>
                 ) : (
                   <>
-                    <Send size={18} />
-                    Inscrever-se
+                    <Send size={20} />
+                    Receber acesso no email
                   </>
                 )}
               </button>
 
-              <p className="text-xs text-gray-500 text-center">
-                Respeitamos sua privacidade. Você pode cancelar a inscrição a qualquer momento.
+              <p className="text-center text-slate-400 text-xs">
+                Seus dados estão seguros e serão usados apenas para comunicação relacionada ao livro e à comunidade.
               </p>
             </form>
-          ) : (
-            /* MENSAGEM DE SUCESSO */
-            <div className="text-center py-8">
-              <CheckCircle className="text-green-500 mx-auto mb-4" size={48} />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Inscrição realizada com sucesso!
-              </h3>
-              <p className="text-gray-600">
-                Obrigado por se inscrever. Em breve você receberá nossas novidades.
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* BENEFÍCIOS */}
-        <div className="mt-12 grid md:grid-cols-3 gap-6 text-left">
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-            <div className="text-2xl mb-3">📚</div>
-            <h3 className="text-white font-semibold mb-2">Lançamentos</h3>
-            <p className="text-blue-100 text-sm">
-              Seja o primeiro a saber sobre novos livros e materiais
-            </p>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-            <div className="text-2xl mb-3">📅</div>
-            <h3 className="text-white font-semibold mb-2">Eventos</h3>
-            <p className="text-blue-100 text-sm">
-              Convites exclusivos para eventos e encontros especiais
-            </p>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-            <div className="text-2xl mb-3">💡</div>
-            <h3 className="text-white font-semibold mb-2">Conteúdo Exclusivo</h3>
-            <p className="text-blue-100 text-sm">
-              Acesso antecipado a vídeos, artigos e materiais especiais
-            </p>
           </div>
         </div>
       </div>

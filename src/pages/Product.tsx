@@ -1,6 +1,5 @@
 import { useState } from "react";
 import bookImg from "@/assets/book-mockup.png";
-import { useCart } from "@/context/CartContext";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -12,7 +11,6 @@ const Product = () => {
 
   const price = 195;
 
-  const { addToCart } = useCart();
   const navigate = useNavigate();
 
   const increase = () => {
@@ -34,22 +32,11 @@ const Product = () => {
 
   const total = price * qty;
 
-  const handleAddToCart = () => {
-    addToCart({
-      id: 1,
-      name: "Livro Autoridade sobre o Remo",
-      price,
-      image: bookImg,
-      quantity: qty,
-    });
-
+  // Funções de compra removidas
+  const handleBuyNow = () => {
+    // Aqui você pode implementar a lógica de compra direta
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
-  };
-
-  const handleBuyNow = () => {
-    handleAddToCart();
-    navigate("/cart");
   };
 
   return (
@@ -62,7 +49,7 @@ const Product = () => {
         {added && (
           <div className="fixed top-6 right-6 z-50 bg-green-500/95 backdrop-blur-sm text-white px-6 py-4 rounded-xl shadow-xl flex items-center gap-3 animate-[fadeIn_0.3s_ease]">
             <CheckCircle size={22} />
-            Produto adicionado ao carrinho
+            Obrigado pela sua compra!
           </div>
         )}
 

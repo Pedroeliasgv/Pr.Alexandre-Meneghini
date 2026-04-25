@@ -1,102 +1,111 @@
 import aboutImg from "@/assets/about-portrait.png";
+import { Award, Book, Quote, Scale, Sparkles, Users } from "lucide-react";
+
+const stats = [
+  { icon: Scale, label: "Anos de advocacia", value: "18+" },
+  { icon: Award, label: "Atuações no Júri", value: "357" },
+  { icon: Users, label: "Anos de ministério", value: "16+" },
+  { icon: Book, label: "Áreas de estudo", value: "Múltiplas" },
+];
 
 const AboutSection = () => {
   return (
-    <section id="about" className="relative py-24 bg-secondary overflow-hidden">
-      <div className="container mx-auto px-4 relative z-20">
-
-        <p className="text-center text-primary tracking-[0.3em] text-sm mb-4 uppercase">
-          Sobre o Autor
-        </p>
-
-        <h2
-          className="
-            text-3xl md:text-4xl font-bold text-white-500 mb-16
-
-            max-w-4xl mx-auto
-            text-center md:text-left
-
-            md:pl-20 lg:pl-32 xl:pl-40
-          "
-        >
-          Uma vida dedicada ao ensino, à fé e ao chamado apostólico
-        </h2>
-
-        <div
-          className="
-            max-w-4xl mx-auto
-            text-center md:text-left
-            space-y-5
-            text-foreground/80 leading-relaxed text-sm md:text-base
-
-            md:pl-20 lg:pl-32 xl:pl-40
-          "
-        >
-          <p>
-            <strong className="text-white">
-              Alexandre Meneghini Ramos
-            </strong>{" "}
-            é bacharel em Direito e especialista em diversas áreas, incluindo
-            Direito Penal, Teologia e Antropologia. Pesquisador das estruturas
-            do pensamento e da fé, segue aprofundando seus estudos em História
-            da Religião e Filosofia.
-          </p>
-
-          <p>
-            Com 18 anos na advocacia criminal e 357 atuações no Tribunal do Júri,
-            une precisão técnica e oratória à sua trajetória ministerial de 16 anos,
-            marcada pelo ensino bíblico e formação espiritual com foco nos dons
-            do Espírito Santo.
-          </p>
-
-          <p>
-            Sua atuação conecta Direito e Teologia de forma estratégica,
-            trazendo uma abordagem sólida e prática para os desafios da Igreja atual.
-          </p>
-
-          <p className="text-white font-medium">
-            Em “Autoridade Sobre o Remo”, apresenta uma visão profunda sobre o
-            ministério apostólico e o governo descrito em Efésios 4 um chamado
-            ao alinhamento e à maturidade da Igreja.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 pt-6 justify-center md:justify-start">
-            <a
-              href="#books"
-              className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition"
-            >
-              QUERO COMEÇAR AGORA
-            </a>
-
-            <a
-              href="#videos"
-              className="border border-primary text-primary px-6 py-3 rounded-lg font-semibold hover:bg-primary/10 transition"
-            >
-              ASSISTIR CONTEÚDOS
-            </a>
-          </div>
-        </div>
+    <section
+      id="about"
+      className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-24 md:py-32"
+    >
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute left-0 top-1/4 h-96 w-96 rounded-full bg-blue-500/15 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-cyan-500/10 blur-[120px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_left,rgba(59,130,246,0.12),transparent_35%)]" />
       </div>
 
       <img
         src={aboutImg}
-        alt="Autor"
+        alt="Alexandre Meneghini Ramos"
         className="
-          absolute left-0 bottom-0
-          h-[90%] md:h-[100%]
-          w-auto object-contain
-
-          scale-125 md:scale-150 lg:scale-175
-
-          -translate-x-16 md:-translate-x-24 lg:-translate-x-32
-          translate-y-10 md:translate-y-16
-
-          opacity-90
-          pointer-events-none
-
-          z-10
+          pointer-events-none absolute bottom-0 left-0 hidden
+          h-[98%] w-auto
+          -translate-x-16
+          object-contain
+          opacity-60
+          brightness-125 contrast-110 saturate-110
+          select-none
+          lg:block
+          xl:opacity-75
         "
       />
+
+      <div className="absolute left-0 bottom-0 hidden h-full w-[48%] bg-gradient-to-r from-transparent via-slate-950/20 to-slate-950 lg:block" />
+
+      <div className="container relative z-10 mx-auto px-4">
+        <div className="ml-auto max-w-4xl">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-2 text-blue-200">
+            <Sparkles size={16} />
+            <span className="text-xs font-bold uppercase tracking-[0.25em]">
+              Sobre o autor
+            </span>
+          </div>
+
+          <h2 className="mb-8 text-3xl font-black leading-tight text-white md:text-5xl">
+            Uma trajetória construída entre{" "}
+            <span className="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">
+              fé, ensino e autoridade espiritual
+            </span>
+          </h2>
+
+          <div className="relative mb-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-2xl backdrop-blur-md">
+            <Quote className="mb-4 text-blue-300" size={28} />
+
+            <div className="space-y-5 text-base leading-relaxed text-slate-300 md:text-lg">
+              <p>
+                <strong className="text-white">
+                  Alexandre Meneghini Ramos
+                </strong>{" "}
+                é bacharel em Direito e estudioso de áreas como Direito Penal,
+                Teologia, Antropologia, História da Religião e Filosofia.
+              </p>
+
+              <p>
+                Com experiência na advocacia criminal e uma caminhada ministerial
+                marcada pelo ensino bíblico, une profundidade técnica, clareza de
+                comunicação e compromisso com a formação espiritual.
+              </p>
+
+              <p className="font-medium text-white">
+                Em{" "}
+                <span className="text-blue-300">
+                  “Autoridade Sobre o Remo”
+                </span>
+                , apresenta uma reflexão profunda sobre autoridade, governo
+                espiritual e o verdadeiro espírito apostólico nos dias atuais.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {stats.map((stat) => {
+              const Icon = stat.icon;
+
+              return (
+                <div
+                  key={stat.label}
+                  className="group rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-blue-400/40 hover:bg-white/10 hover:shadow-xl hover:shadow-blue-500/10"
+                >
+                  <Icon
+                    className="mb-4 text-blue-300 transition-transform duration-300 group-hover:scale-110"
+                    size={24}
+                  />
+                  <p className="text-2xl font-black text-white">
+                    {stat.value}
+                  </p>
+                  <p className="text-sm text-slate-400">{stat.label}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </section>
   );
 };
