@@ -23,11 +23,11 @@ const HeroSection = () => {
       <div className="absolute inset-0">
         <img src={heroBg} alt="" className="w-full h-full object-cover" />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/55 to-slate-950/25" />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-transparent to-slate-950/85" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/65 to-slate-950/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/55 via-transparent to-slate-950/90" />
 
-        <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[420px] h-[420px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/3 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/10 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-indigo-500/10 blur-[120px]" />
       </div>
 
       {/* IMAGEM DO LÍDER */}
@@ -35,13 +35,14 @@ const HeroSection = () => {
         src={leaderImg}
         alt="Pr. Alexandre"
         className="
+          hidden md:block
           absolute right-0 bottom-0
-          h-[68%] md:h-[88%] lg:h-[100%]
+          h-[88%] lg:h-full
           w-auto object-contain
-          scale-105 md:scale-110 lg:scale-115
-          translate-x-10 md:translate-x-14 lg:translate-x-20
-          translate-y-0 md:translate-y-6
-          opacity-75 md:opacity-90
+          scale-110 lg:scale-115
+          translate-x-14 lg:translate-x-20
+          translate-y-6
+          opacity-90
           pointer-events-none select-none
           z-10
         "
@@ -51,15 +52,16 @@ const HeroSection = () => {
       <div
         className="
           container mx-auto relative z-20
-          flex items-center justify-start
+          flex items-center justify-center md:justify-start
           min-h-screen
           px-5 sm:px-8 md:px-12 lg:px-20
         "
       >
         <div
           className="
-            max-w-[720px]
-            text-left
+            w-full
+            max-w-[100%] md:max-w-[720px]
+            text-center md:text-left
             animate-fade-in
             mt-4 md:mt-0
           "
@@ -77,8 +79,9 @@ const HeroSection = () => {
             src={logoLion}
             alt="Logo"
             className="
-              w-20 sm:w-24 md:w-28 lg:w-32
-              mb-4
+              w-28 sm:w-32 md:w-28 lg:w-32
+              mx-auto md:mx-0
+              mb-5
               animate-fade-in-delay-100
               drop-shadow-[0_0_24px_rgba(59,130,246,0.45)]
             "
@@ -89,7 +92,12 @@ const HeroSection = () => {
             src={remoImg}
             alt="Autoridade sobre o Remo"
             className="
-              w-[260px] sm:w-[380px] md:w-[520px] lg:w-[620px]
+              w-[95%]
+              max-w-[390px]
+              sm:max-w-[460px]
+              md:max-w-[520px]
+              lg:max-w-[620px]
+              mx-auto md:mx-0
               mb-6
               animate-fade-in-delay-200
               drop-shadow-2xl
@@ -99,16 +107,17 @@ const HeroSection = () => {
           {/* SUBTITLE */}
           <p
             className="
-              text-sm sm:text-base md:text-xl lg:text-2xl
+              mx-auto md:mx-0
+              max-w-[360px] md:max-w-2xl
+              text-base sm:text-lg md:text-xl lg:text-2xl
               text-slate-200
-              tracking-[0.18em] md:tracking-[0.25em]
+              tracking-[0.16em] md:tracking-[0.25em]
               mb-8
               font-light
               animate-fade-in-delay-300
-              max-w-2xl
             "
           >
-            O ESPÍRITO APOSTÓLICO NOS DIAS DE HOJE
+            O VERDADEIRO ESPÍRITO APOSTÓLICO NOS DIAS DE HOJE
           </p>
 
           {/* CTA */}
@@ -119,9 +128,9 @@ const HeroSection = () => {
               bg-gradient-to-r from-blue-600 to-indigo-600
               hover:from-blue-700 hover:to-indigo-700
               text-white
-              px-8 md:px-10 py-4
+              px-10 md:px-10 py-4
               rounded-xl
-              text-base md:text-lg font-bold
+              text-lg font-bold
               transition-all duration-300
               hover:scale-105 active:scale-95
               shadow-xl shadow-blue-500/30
