@@ -31,21 +31,22 @@ const HeroSection = () => {
       </div>
 
       {/* IMAGEM DO LÍDER — DESKTOP */}
-      <img
-        src={leaderImg}
-        alt="Pr. Alexandre"
-        className="
-          hidden md:block
-          absolute bottom-0 right-0
-          h-[88%] w-auto object-contain
-          translate-x-14 translate-y-6
-          scale-110
-          opacity-90
-          pointer-events-none select-none
-          z-10
-          lg:h-full lg:translate-x-20 lg:scale-115
-        "
-      />
+        <img
+          src={leaderImg}
+          alt="Pr. Alexandre"
+          className="
+            hidden md:block
+            absolute right-0 bottom-0
+            h-[85%] lg:h-full
+            w-auto object-contain
+            scale-110 lg:scale-115
+            translate-x-14 lg:translate-x-20
+            translate-y-6
+            opacity-90
+            pointer-events-none select-none
+            z-10
+          "
+        />
 
       {/* CONTEÚDO */}
       <div
@@ -58,28 +59,14 @@ const HeroSection = () => {
           lg:px-20
         "
       >
-        <div
-          className="
-            w-full
-            max-w-[100%] md:max-w-[720px]
-            text-center md:text-left
-            animate-fade-in
-          "
-        >
-          {/* IMAGEM DO PASTOR — MOBILE */}
-          <div className="mb-4 flex justify-center md:hidden">
-            <img
-              src={leaderImg}
-              alt="Pr. Alexandre"
-              className="
-                h-[280px] w-auto
-                object-contain
-                drop-shadow-2xl
-                brightness-110 contrast-110
-                sm:h-[320px]
-              "
-            />
-          </div>
+          <div
+            className="
+              w-full
+              max-w-[100%] md:max-w-[720px]
+              text-center md:text-left
+              animate-fade-in
+            "
+          >
 
           {/* LOGO */}
           <img
