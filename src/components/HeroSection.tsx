@@ -18,7 +18,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden pt-20 md:flex md:items-center md:pt-16">
+    <section className="relative overflow-hidden pt-20 md:min-h-screen md:flex md:items-center md:pt-16">
       {/* BACKGROUND */}
       <div className="absolute inset-0">
         <img src={heroBg} alt="" className="h-full w-full object-cover" />
@@ -49,16 +49,12 @@ const HeroSection = () => {
         />
 
       {/* CONTEÚDO */}
-      <div
-        className="
-          container relative z-20 mx-auto
-          flex min-h-screen items-start justify-center
-          px-5 pb-12 pt-4
-          sm:px-8
-          md:min-h-screen md:items-center md:justify-start md:px-12 md:pt-0
-          lg:px-20
-        "
-      >
+      <div className="
+          container ...
+          flex items-start justify-center
+          py-12
+          md:min-h-screen md:items-center
+        ">
           <div
             className="
               w-full
