@@ -18,7 +18,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden pt-20 md:pt-16">
+    <section className="relative min-h-screen flex items-center overflow-visible pt-20 md:pt-16">
       {/* BACKGROUND */}
       <div className="absolute inset-0">
         <img src={heroBg} alt="" className="w-full h-full object-cover" />
@@ -31,32 +31,35 @@ const HeroSection = () => {
       </div>
 
       {/* IMAGEM DO LÍDER */}
-      <img
-        src={leaderImg}
-        alt="Pr. Alexandre"
-        className="
-          absolute bottom-0 left-1/2
-          h-[52%] w-auto
-          -translate-x-1/2
-          translate-y-4
-          object-contain
-          opacity-28
-          brightness-110 contrast-110
-          pointer-events-none select-none
-          z-10
+        <img
+          src={leaderImg}
+          alt="Pr. Alexandre"
+          className="
+            absolute bottom-0 left-1/2
+            -translate-x-1/2
 
-          md:left-auto md:right-0 md:h-[88%]
-          md:translate-x-14 md:translate-y-6
-          md:opacity-90
+            w-[85%]
+            max-w-[320px]
 
-          lg:h-full lg:translate-x-20 lg:scale-115
-        "
-      />
+            object-contain
+
+            opacity-60
+            brightness-110
+
+            z-[5]   
+
+            md:left-auto md:right-0
+            md:w-auto md:h-[88%]
+            md:translate-x-14 md:opacity-90
+
+            lg:h-full lg:translate-x-20
+          "
+        />
 
       {/* CONTEÚDO */}
       <div
         className="
-          container mx-auto relative z-20
+          container mx-auto relative z-30
           flex items-center justify-center md:justify-start
           min-h-screen
           px-5 sm:px-8 md:px-12 lg:px-20
