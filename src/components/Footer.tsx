@@ -33,7 +33,7 @@ const Footer = () => {
             >
               <ShoppingBag size={16} />
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-              
+
               Comprar na Amazon
             </a>
           </div>
@@ -74,8 +74,23 @@ const Footer = () => {
             © {currentYear} <span className="font-semibold text-blue-400">Pr. Alexandre Meneghini</span> — Todos os direitos reservados.
           </p>
 
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            Feito com <Heart size={16} className="text-red-500" /> para servir vidas.
+          <div className="flex flex-col items-center gap-1 text-sm text-slate-500 md:items-end">
+            <div className="flex items-center gap-2">
+              Feito com <Heart size={16} className="text-red-500" /> para servir vidas.
+            </div>
+
+            <a
+              href="https://pubird.com"
+              target="_blank"
+              className="text-xs text-slate-500 opacity-70 hover:opacity-100 transition"
+            >
+            <p className="text-sm text-slate-400 font-medium opacity-90 hover:text-white transition">
+              Desenvolvido por{" "}
+              <span className="text-blue-400 hover:text-blue-300 transition">
+                Pubird
+              </span>
+            </p>
+            </a>
           </div>
         </div>
       </div>

@@ -93,7 +93,9 @@ const NewsletterSection = () => {
         .eq("ativo", true)
         .maybeSingle();
 
-      if (searchError) throw searchError;
+      if (searchError) {
+        throw searchError;
+      }
 
       if (existingSubscriber) {
         setError("Este email já está inscrito.");
@@ -111,14 +113,24 @@ const NewsletterSection = () => {
           created_at: new Date().toISOString(),
         });
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        throw insertError;
+      }
 
-      await supabase.functions.invoke("newsletter-welcome", {
-        body: {
-          nome,
-          email,
-        },
-      });
+      const { data: emailData, error: emailError } =
+        await supabase.functions.invoke("newsletter-welcome", {
+          body: {
+            nome,
+            email,
+          },
+        });
+
+      console.log("EMAIL DATA:", emailData);
+      console.log("EMAIL ERROR:", emailError);
+
+      if (emailError) {
+        throw emailError;
+      }
 
       setSuccess(true);
       setFormData({
@@ -129,7 +141,9 @@ const NewsletterSection = () => {
       });
     } catch (err) {
       console.error("Erro ao cadastrar:", err);
-      setError("Não foi possível concluir sua inscrição. Tente novamente.");
+      setError(
+        "Cadastro salvo, mas não foi possível enviar o email de acesso. Tente novamente."
+      );
     } finally {
       setLoading(false);
     }
@@ -138,39 +152,39 @@ const NewsletterSection = () => {
   return (
     <section
       id="newsletter"
-      className="relative py-24 md:py-32 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 overflow-hidden"
+      className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 py-24 md:py-32"
     >
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-[120px]" />
+        <div className="absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-500/20 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-[120px]" />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-400/50 text-blue-200">
+      <div className="container relative z-10 mx-auto px-4">
+        <div className="mb-12 text-center">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-400/50 bg-blue-500/20 px-4 py-2 text-blue-200">
             <Zap size={16} />
             <span className="text-sm font-semibold">FIQUE POR DENTRO</span>
           </div>
 
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+          <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
             Receba conteúdos exclusivos no seu email
           </h2>
 
-          <p className="text-lg text-blue-100 max-w-2xl mx-auto">
+          <p className="mx-auto max-w-2xl text-lg text-blue-100">
             Ensinamentos, reflexões e novidades sobre o livro diretamente na sua caixa de entrada.
           </p>
         </div>
 
-        <div className="max-w-2xl mx-auto">
+        <div className="mx-auto max-w-2xl">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur-xl opacity-40" />
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 opacity-40 blur-xl" />
 
             <form
               onSubmit={handleSubmit}
-              className="relative bg-slate-950/95 rounded-2xl border border-blue-500/30 p-8 md:p-12 space-y-6 shadow-2xl"
+              className="relative space-y-6 rounded-2xl border border-blue-500/30 bg-slate-950/95 p-8 shadow-2xl md:p-12"
             >
               <div>
-                <label className="block text-white font-semibold mb-3">
+                <label className="mb-3 block font-semibold text-white">
                   Seu nome
                 </label>
                 <input
@@ -180,12 +194,12 @@ const NewsletterSection = () => {
                   onChange={handleInputChange}
                   placeholder="Digite seu nome"
                   disabled={loading}
-                  className="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all disabled:opacity-60"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white placeholder:text-slate-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-60"
                 />
               </div>
 
               <div>
-                <label className="block text-white font-semibold mb-3">
+                <label className="mb-3 block font-semibold text-white">
                   Seu email
                 </label>
 
@@ -202,13 +216,13 @@ const NewsletterSection = () => {
                     onChange={handleInputChange}
                     placeholder="seuemail@gmail.com"
                     disabled={loading}
-                    className="w-full pl-12 pr-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all disabled:opacity-60"
+                    className="w-full rounded-lg border border-slate-700 bg-slate-900 py-3 pl-12 pr-4 text-white placeholder:text-slate-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-60"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-white font-semibold mb-3">
+                <label className="mb-3 block font-semibold text-white">
                   CPF
                 </label>
 
@@ -219,18 +233,18 @@ const NewsletterSection = () => {
                   onChange={handleCpfChange}
                   placeholder="000.000.000-00"
                   disabled={loading}
-                  className="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all disabled:opacity-60"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white placeholder:text-slate-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-60"
                 />
               </div>
 
-              <label className="flex items-start gap-3 text-sm text-slate-300 cursor-pointer">
+              <label className="flex cursor-pointer items-start gap-3 text-sm text-slate-300">
                 <input
                   type="checkbox"
                   name="maior"
                   checked={formData.maior}
                   onChange={handleInputChange}
                   disabled={loading}
-                  className="mt-1 w-4 h-4 accent-blue-600"
+                  className="mt-1 h-4 w-4 accent-blue-600"
                 />
 
                 <span>
@@ -239,14 +253,14 @@ const NewsletterSection = () => {
               </label>
 
               {error && (
-                <div className="bg-red-500/15 border border-red-500/40 text-red-200 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                <div className="flex items-center gap-2 rounded-lg border border-red-500/40 bg-red-500/15 px-4 py-3 text-sm text-red-200">
                   <AlertCircle size={18} />
                   {error}
                 </div>
               )}
 
               {success && (
-                <div className="bg-green-500/15 border border-green-500/40 text-green-200 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                <div className="flex items-center gap-2 rounded-lg border border-green-500/40 bg-green-500/15 px-4 py-3 text-sm text-green-200">
                   <CheckCircle size={18} />
                   Inscrição confirmada! Verifique seu email para acessar a comunidade.
                 </div>
@@ -255,11 +269,11 @@ const NewsletterSection = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 rounded-lg font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-blue-500/30"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 py-4 font-bold text-white transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg hover:shadow-blue-500/30 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? (
                   <>
-                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                     Enviando...
                   </>
                 ) : (
@@ -270,7 +284,7 @@ const NewsletterSection = () => {
                 )}
               </button>
 
-              <p className="text-center text-slate-400 text-xs">
+              <p className="text-center text-xs text-slate-400">
                 Seus dados estão seguros e serão usados apenas para comunicação relacionada ao livro e à comunidade.
               </p>
             </form>
