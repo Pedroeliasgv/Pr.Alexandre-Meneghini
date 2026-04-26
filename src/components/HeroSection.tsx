@@ -18,7 +18,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden pt-16">
+    <section className="relative min-h-screen flex items-center overflow-hidden pt-20 md:pt-16">
       {/* BACKGROUND */}
       <div className="absolute inset-0">
         <img src={heroBg} alt="" className="w-full h-full object-cover" />
@@ -31,21 +31,27 @@ const HeroSection = () => {
       </div>
 
       {/* IMAGEM DO LÍDER */}
-        <img
-          src={leaderImg}
-          alt="Pr. Alexandre"
-          className="
-            absolute right-0 bottom-0
-            h-[58%] sm:h-[62%] md:h-[88%] lg:h-full
-            w-auto object-contain
-            scale-105 md:scale-110 lg:scale-115
-            translate-x-20 sm:translate-x-16 md:translate-x-14 lg:translate-x-20
-            translate-y-6 md:translate-y-6
-            opacity-35 sm:opacity-45 md:opacity-90
-            pointer-events-none select-none
-            z-10
-          "
-        />
+      <img
+        src={leaderImg}
+        alt="Pr. Alexandre"
+        className="
+          absolute bottom-0 left-1/2
+          h-[52%] w-auto
+          -translate-x-1/2
+          translate-y-4
+          object-contain
+          opacity-28
+          brightness-110 contrast-110
+          pointer-events-none select-none
+          z-10
+
+          md:left-auto md:right-0 md:h-[88%]
+          md:translate-x-14 md:translate-y-6
+          md:opacity-90
+
+          lg:h-full lg:translate-x-20 lg:scale-115
+        "
+      />
 
       {/* CONTEÚDO */}
       <div

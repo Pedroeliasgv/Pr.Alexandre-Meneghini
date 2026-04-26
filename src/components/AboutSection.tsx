@@ -20,22 +20,38 @@ const AboutSection = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_left,rgba(59,130,246,0.12),transparent_35%)]" />
       </div>
 
-      <img
-        src={aboutImg}
-        alt="Alexandre Meneghini Ramos"
-        className="
-          pointer-events-none absolute bottom-0 left-1/2
-          h-[78%] w-auto
-          -translate-x-1/2
-          object-contain
-          opacity-15
-          brightness-125 contrast-110 saturate-110
-          select-none
-          sm:opacity-20
-          lg:left-0 lg:h-[98%] lg:-translate-x-16 lg:opacity-60
-          xl:opacity-75
-        "
-      />
+      <div className="relative mx-auto mb-10 flex max-w-sm justify-center lg:hidden">
+        <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-3xl" />
+
+        <img
+          src={aboutImg}
+          alt="Alexandre Meneghini Ramos"
+          className="
+            relative z-10
+            h-[360px] w-auto
+            object-contain
+            opacity-95
+            brightness-110 contrast-110 saturate-110
+            drop-shadow-2xl
+          "
+        />
+      </div>
+
+        <img
+          src={aboutImg}
+          alt="Alexandre Meneghini Ramos"
+          className="
+            pointer-events-none absolute bottom-0 left-0 hidden
+            h-[98%] w-auto
+            -translate-x-16
+            object-contain
+            opacity-70
+            brightness-125 contrast-110 saturate-110
+            select-none
+            lg:block
+            xl:opacity-80
+          "
+        />
 
       <div className="absolute left-0 bottom-0 hidden h-full w-[48%] bg-gradient-to-r from-transparent via-slate-950/20 to-slate-950 lg:block" />
 
