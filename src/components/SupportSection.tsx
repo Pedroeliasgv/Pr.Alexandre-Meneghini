@@ -3,11 +3,13 @@ import { useState } from "react";
 const SupportSection = () => {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText("41.521.967/0001-04");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+    const PIX_KEY = "11919311999";
+
+    const handleCopy = async () => {
+      await navigator.clipboard.writeText(PIX_KEY);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    };
 
   return (
     <section id="support" className="py-28 bg-background relative">
