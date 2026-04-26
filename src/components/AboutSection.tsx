@@ -24,14 +24,15 @@ const AboutSection = () => {
         src={aboutImg}
         alt="Alexandre Meneghini Ramos"
         className="
-          pointer-events-none absolute bottom-0 left-0 hidden
-          h-[98%] w-auto
-          -translate-x-16
+          pointer-events-none absolute bottom-0 left-1/2
+          h-[78%] w-auto
+          -translate-x-1/2
           object-contain
-          opacity-60
+          opacity-15
           brightness-125 contrast-110 saturate-110
           select-none
-          lg:block
+          sm:opacity-20
+          lg:left-0 lg:h-[98%] lg:-translate-x-16 lg:opacity-60
           xl:opacity-75
         "
       />

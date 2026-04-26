@@ -31,22 +31,21 @@ const HeroSection = () => {
       </div>
 
       {/* IMAGEM DO LÍDER */}
-      <img
-        src={leaderImg}
-        alt="Pr. Alexandre"
-        className="
-          hidden md:block
-          absolute right-0 bottom-0
-          h-[88%] lg:h-full
-          w-auto object-contain
-          scale-110 lg:scale-115
-          translate-x-14 lg:translate-x-20
-          translate-y-6
-          opacity-90
-          pointer-events-none select-none
-          z-10
-        "
-      />
+        <img
+          src={leaderImg}
+          alt="Pr. Alexandre"
+          className="
+            absolute right-0 bottom-0
+            h-[58%] sm:h-[62%] md:h-[88%] lg:h-full
+            w-auto object-contain
+            scale-105 md:scale-110 lg:scale-115
+            translate-x-20 sm:translate-x-16 md:translate-x-14 lg:translate-x-20
+            translate-y-6 md:translate-y-6
+            opacity-35 sm:opacity-45 md:opacity-90
+            pointer-events-none select-none
+            z-10
+          "
+        />
 
       {/* CONTEÚDO */}
       <div
