@@ -37,23 +37,21 @@ const AboutSection = () => {
         />
       </div>
 
-        <img
-          src={aboutImg}
-          alt="Alexandre Meneghini Ramos"
-          className="
-            pointer-events-none absolute bottom-0 left-0 hidden
-            h-[98%] w-auto
-            -translate-x-16
-            object-contain
-            opacity-70
-            brightness-125 contrast-110 saturate-110
-            select-none
-            lg:block
-            xl:opacity-80
-          "
-        />
-
-      <div className="absolute left-0 bottom-0 hidden h-full w-[48%] bg-gradient-to-r from-transparent via-slate-950/20 to-slate-950 lg:block" />
+      <img
+        src={aboutImg}
+        alt="Alexandre Meneghini Ramos"
+        className="
+          pointer-events-none absolute bottom-0 left-0 hidden
+          h-[98%] w-auto
+          -translate-x-16
+          object-contain
+          opacity-70
+          brightness-125 contrast-110 saturate-110
+          select-none
+          lg:block
+          xl:opacity-80
+        "
+      />
 
       <div className="container relative z-10 mx-auto px-4">
         <div className="ml-auto max-w-4xl">
