@@ -6,7 +6,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 import Index from "./pages/Index";
-import Product from "./pages/Product";
 import NotFound from "./pages/NotFound";
 
 import { useReveal } from "@/hooks/useReveal";
@@ -25,7 +24,6 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/produto" element={<Product />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
