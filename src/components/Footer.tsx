@@ -4,7 +4,7 @@ const AMAZON_LINK = "COLE_AQUI_O_LINK_DA_AMAZON";
 
 const socialLinks = [
   { label: "YouTube", href: "https://www.youtube.com/@pr.alexandremeneghiniramos", icon: Youtube },
-  { label: "Instagram", href: "https://www.instagram.com/pr.alexandremeneghiniramos/", icon: Instagram },
+  { label: "Instagram", href: "https://www.instagram.com/pr.alexandremeneghini/", icon: Instagram },
   { label: "Facebook", href: "https://www.facebook.com/alexandreendgreice.7", icon: Facebook },
 ];
 
